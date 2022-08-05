@@ -35,7 +35,7 @@ int main() {
         );
 
     if (childPid == -1) {
-        printf("clone failed: ", strerror(errno));
+        printf("clone failed: %s", strerror(errno));
     }
 
     waitpid(childPid, NULL, 0);
