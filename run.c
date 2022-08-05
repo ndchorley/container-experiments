@@ -25,7 +25,7 @@ int main() {
     char *stackStart = malloc(stackSize);
     char *stackEnd = stackStart + stackSize;
 
-    int flags = CLONE_FILES | SIGCHLD;
+    int flags = SIGCHLD;
     pid_t childPid =
         clone(
             runShell,
