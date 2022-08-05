@@ -1,8 +1,10 @@
 #define _GNU_SOURCE
+#include <errno.h>
 #include <sched.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -31,6 +33,10 @@ int main() {
             flags,
             NULL
         );
+
+    if (childPid == -1) {
+        printf("clone failed: ", strerror(errno));
+    }
 
     waitpid(childPid, NULL, 0);
 
