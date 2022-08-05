@@ -29,7 +29,7 @@ int main() {
     pid_t childPid =
         clone(
             runShell,
-            stackStart,
+            stackEnd,
             flags,
             NULL
         );
