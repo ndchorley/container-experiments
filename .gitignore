@@ -1,2 +1,4 @@
 run
 .vscode/
+*.tar.gz
+container_root
