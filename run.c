@@ -21,9 +21,9 @@ int runShell(void *arg) {
 int main() {
     printf("Running a shell...\n\n");
 
-    int stackSize = 65536;
-    char *stackStart = malloc(stackSize);
-    char *stackEnd = stackStart + stackSize;
+    int stackSizeBytes = 65536;
+    char *stackStart = malloc(stackSizeBytes);
+    char *stackEnd = stackStart + stackSizeBytes;
 
     int flags = SIGCHLD;
     pid_t childPid =
