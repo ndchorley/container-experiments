@@ -26,6 +26,8 @@ create_container_root_filesystem () {
     rm -rf $directory && mkdir $directory
     tar -C $directory -xf $alpine_filename
 
+    touch $directory/CONTAINER_ROOT
+
     echo
 }
 
