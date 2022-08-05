@@ -1,4 +1,3 @@
 #!/bin/bash
 
-gcc run.c -o run
-./run
+gcc run.c -o run && ./run
