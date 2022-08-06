@@ -1,3 +1,4 @@
+#define _DEFAULT_SOURCE
 #define _GNU_SOURCE
 #include <errno.h>
 #include <sched.h>
@@ -8,18 +9,53 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-int runShell(void *arg) {
-    char *arguments[] = {"bash", NULL};
-    char *environment[] = {NULL};
-    execve("/bin/bash", arguments, environment);
+void changeRootDirectory() {
+    int result = chroot("./container_root");
 
-    printf("After execve - something went wrong\n");
+    if (result == -1) {
+        printf(
+            "Changing root directory failed: %s",
+            strerror(errno)
+        );
+
+        exit(result);
+    }
+}
+
+void changeWorkingDirectoryToRoot() {
+    int result = chdir("/");
+
+    if (result == -1) {
+        printf(
+            "Changing working directory to root failed: %s",
+            strerror(errno)
+        );
+
+        exit(result);
+    }
+}
+
+void startShell() {
+    char *arguments[] = {"sh", NULL};
+    char *environment[] = {NULL};
+    int result = execve("/bin/sh", arguments, environment);
+
+    if (result == -1) {
+        printf("Running shell failed: %s", strerror(errno));
+        exit(result);
+    }
+}
+
+int startContainer(void *arg) {
+    changeRootDirectory();
+    changeWorkingDirectoryToRoot();
+    startShell();
 
     return 0;
 }
 
 int main() {
-    printf("Running a shell...\n\n");
+    printf("Starting a container...\n\n");
 
     int stackSizeBytes = 65536;
     char *stackStart = malloc(stackSizeBytes);
@@ -28,7 +64,7 @@ int main() {
     int flags = SIGCHLD;
     pid_t childPid =
         clone(
-            runShell,
+            startContainer,
             stackEnd,
             flags,
             NULL
