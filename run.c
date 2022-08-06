@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/mount.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -46,9 +47,19 @@ void startShell() {
     }
 }
 
+void mountProcFilesystem() {
+    int result = mount("proc", "/proc", "proc", 0, NULL);
+
+    if (result == -1) {
+        printf("Mounting proc filesystem failed: %s", strerror(errno));
+        exit(result);
+    }
+}
+
 int startContainer(void *arg) {
     changeRootDirectory();
     changeWorkingDirectoryToRoot();
+    mountProcFilesystem();
     startShell();
 
     return 0;
@@ -76,7 +87,9 @@ int main() {
 
     waitpid(childPid, NULL, 0);
 
-    printf("\nShell terminated\n");
+    umount("./container_root/proc");
+
+    printf("\nContainer terminated\n");
 
     return 0;
 }
