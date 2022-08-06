@@ -56,10 +56,21 @@ void mountProcFilesystem() {
     }
 }
 
+void setHostname() {
+    const char * hostname = "container";
+    int result = sethostname("container", strlen(hostname));
+
+    if (result == -1) {
+        printf("Setting hostname failed: %s", strerror(errno));
+        exit(result);
+    }
+}
+
 int startContainer(void *arg) {
     changeRootDirectory();
     changeWorkingDirectoryToRoot();
     mountProcFilesystem();
+    setHostname();
     startShell();
 
     return 0;
@@ -73,7 +84,11 @@ int main() {
     char *stackEnd = stackStart + stackSizeBytes;
 
     int flags =
-        CLONE_NEWNS | CLONE_NEWUSER | CLONE_NEWPID | SIGCHLD;
+        CLONE_NEWUTS |
+        CLONE_NEWNS |
+        CLONE_NEWUSER |
+        CLONE_NEWPID |
+        SIGCHLD;
     pid_t childPid =
         clone(
             startContainer,
