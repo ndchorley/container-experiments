@@ -72,7 +72,7 @@ int main() {
     char *stackStart = malloc(stackSizeBytes);
     char *stackEnd = stackStart + stackSizeBytes;
 
-    int flags = SIGCHLD;
+    int flags = CLONE_NEWPID | SIGCHLD;
     pid_t childPid =
         clone(
             startContainer,
