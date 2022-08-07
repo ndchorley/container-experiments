@@ -58,7 +58,7 @@ void mountProcFilesystem() {
 
 void setHostname() {
     const char * hostname = "container";
-    int result = sethostname("container", strlen(hostname));
+    int result = sethostname(hostname, strlen(hostname));
 
     if (result == -1) {
         printf("Setting hostname failed: %s", strerror(errno));
