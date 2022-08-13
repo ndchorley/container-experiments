@@ -2,3 +2,4 @@ run
 .vscode/
 *.tar.gz
 container_root
+demo_programs/bin
