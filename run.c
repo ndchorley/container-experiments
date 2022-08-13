@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mount.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -76,6 +78,31 @@ int startContainer(void *arg) {
     return 0;
 }
 
+void createCgroupWithMemoryLimit() {
+    int result = mkdir(
+        "/sys/fs/cgroup/container",
+        S_IRWXU | S_IRGRP | S_IROTH
+    );
+
+    if (result == -1) {
+        printf("Creating cgroup failed: %s", strerror(errno));
+        exit(result);
+    }
+
+    FILE* memoryMaxFile =
+        fopen("/sys/fs/cgroup/container/memory.max", "w");
+
+    fprintf(memoryMaxFile, "%d\n", 100 * 1024 * 1024);
+    fclose(memoryMaxFile);
+}
+
+void addChildToCgroup(pid_t pid) {
+    FILE* procsFile =
+        fopen("/sys/fs/cgroup/container/cgroup.procs", "w");
+    fprintf(procsFile, "%d\n", pid);
+    fclose(procsFile);
+}
+
 int main() {
     printf("Starting a container...\n\n");
 
@@ -100,6 +127,9 @@ int main() {
     if (childPid == -1) {
         printf("clone failed: %s", strerror(errno));
     }
+
+    createCgroupWithMemoryLimit();
+    addChildToCgroup(childPid);
 
     waitpid(childPid, NULL, 0);
 
