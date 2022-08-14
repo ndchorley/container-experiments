@@ -81,7 +81,7 @@ int startContainer(void *arg) {
 void createCgroupWithMemoryLimit() {
     int result = mkdir(
         "/sys/fs/cgroup/container",
-        S_IRWXU | S_IRGRP | S_IROTH
+        S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH
     );
 
     if (result == -1) {
